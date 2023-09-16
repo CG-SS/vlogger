@@ -1,55 +1,55 @@
 module vlogger
 
-struct Logger {
-	write_chan chan EventMessage
-	log_level  Level
+struct DefaultLogger {
+	write_channel chan Message
+	log_level     Level
 }
 
-pub fn (l Logger) trace() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) trace() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .trace
 	}
 }
 
-pub fn (l Logger) debug() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) debug() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .debug
 	}
 }
 
-pub fn (l Logger) info() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) info() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .info
 	}
 }
 
-pub fn (l Logger) warn() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) warn() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .warn
 	}
 }
 
-pub fn (l Logger) error() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) error() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .error
 	}
 }
 
-pub fn (l Logger) fatal() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) fatal() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .fatal
 	}
 }
 
-pub fn (l Logger) panic() Event {
-	return Event{
-		write_chan: l.write_chan
+pub fn (l DefaultLogger) panic() Message {
+	return LogMessage{
+		message_channel: l.write_channel
 		level: .panic
 	}
 }
