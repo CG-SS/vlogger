@@ -1,11 +1,9 @@
 module vlogger
 
-const default_message_fieldname = "message"
-
 struct DefaultLogger {
-	message_fieldname string = default_message_fieldname
-	message_chan chan Message = chan Message{cap: 1024}
-	message_level MessageLevel = MessageLevel.info
+	message_fieldname string       = default_message_fieldname
+	message_chan      chan Message = chan Message{cap: 1024}
+	message_level     MessageLevel = MessageLevel.info
 }
 
 pub fn DefaultLogger.new() Logger {
@@ -31,8 +29,8 @@ fn (l DefaultLogger) create_message(message_level MessageLevel) Message {
 	}
 
 	return DefaultMessage{
-		message_level: MessageLevel.trace
-		message_chan: l.message_chan
+		message_level:     MessageLevel.trace
+		message_chan:      l.message_chan
 		message_fieldname: l.message_fieldname
 	}
 }
