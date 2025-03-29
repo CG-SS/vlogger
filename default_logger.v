@@ -23,13 +23,11 @@ fn write_message(message_chan chan Message) {
 
 fn (l DefaultLogger) create_message(message_level MessageLevel) Message {
 	if u8(l.message_level) > u8(message_level) {
-		return NopMessage{
-			message_level: MessageLevel.trace
-		}
+		return NopMessage{}
 	}
 
 	return DefaultMessage{
-		message_level:     MessageLevel.trace
+		message_level:     message_level
 		message_chan:      l.message_chan
 		message_fieldname: l.message_fieldname
 	}

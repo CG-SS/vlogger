@@ -1,7 +1,7 @@
 module vlogger
 
 struct NopMessage {
-	message_level MessageLevel
+	message_level MessageLevel = MessageLevel.none
 }
 
 fn (m NopMessage) level() MessageLevel {
