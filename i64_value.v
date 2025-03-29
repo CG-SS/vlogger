@@ -4,74 +4,74 @@ pub struct I64Value {
 	value i64
 }
 
-fn (b I64Value) primitive_type() PrimitiveType {
+fn (_ I64Value) primitive_type() PrimitiveType {
 	return PrimitiveType.i64
 }
 
-fn (b I64Value) bool() bool {
+fn (_ I64Value) bool() bool {
 	return default_bool_val
 }
 
-fn (b I64Value) string() string {
+fn (_ I64Value) string() string {
 	return default_string_val
 }
 
-fn (b I64Value) i8() i8 {
+fn (_ I64Value) i8() i8 {
 	return default_int_val
 }
 
-fn (b I64Value) i16() i16 {
+fn (_ I64Value) i16() i16 {
 	return default_int_val
 }
 
-fn (b I64Value) int() int {
+fn (_ I64Value) int() int {
 	return default_int_val
 }
 
-fn (b I64Value) i64() i64 {
-	return b.value
+fn (i I64Value) i64() i64 {
+	return i.value
 }
 
-fn (b I64Value) u8() u8 {
+fn (_ I64Value) u8() u8 {
 	return default_int_val
 }
 
-fn (b I64Value) u16() u16 {
+fn (_ I64Value) u16() u16 {
 	return default_int_val
 }
 
-fn (b I64Value) u32() u32 {
+fn (_ I64Value) u32() u32 {
 	return default_int_val
 }
 
-fn (b I64Value) u64() u64 {
+fn (_ I64Value) u64() u64 {
 	return default_int_val
 }
 
-fn (b I64Value) rune() rune {
+fn (_ I64Value) rune() rune {
 	return default_int_val
 }
 
-fn (b I64Value) f32() f32 {
+fn (_ I64Value) f32() f32 {
 	return default_float_val
 }
 
-fn (b I64Value) f64() f64 {
+fn (_ I64Value) f64() f64 {
 	return default_float_val
 }
 
-fn (b I64Value) array() []Value {
+fn (_ I64Value) array() []Value {
 	return []
 }
 
-fn (b I64Value) map() map[string]Value {
+fn (_ I64Value) map() map[string]Value {
 	return map[string]Value{}
 }
 
-fn (b I64Value) strut() Loggable {
+fn (_ I64Value) strut() Loggable {
 	return default_loggable_val
 }
 
-fn (b I64Value) error() IError {
+fn (_ I64Value) error() IError {
 	return default_error
 }

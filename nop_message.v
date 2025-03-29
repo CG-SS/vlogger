@@ -8,75 +8,75 @@ fn (m NopMessage) level() MessageLevel {
 	return m.message_level
 }
 
-fn (m NopMessage) fields() []Field {
+fn (_ NopMessage) fields() []Field {
 	return []
 }
 
-fn (m NopMessage) bool(key string, value bool) Message {
+fn (m NopMessage) bool(_ string, _ bool) Message {
 	return m
 }
 
-fn (m NopMessage) string(key string, value string) Message {
+fn (m NopMessage) string(_ string, _ string) Message {
 	return m
 }
 
-fn (m NopMessage) i8(key string, value i8) Message {
+fn (m NopMessage) i8(_ string, _ i8) Message {
 	return m
 }
 
-fn (m NopMessage) i16(key string, value i16) Message {
+fn (m NopMessage) i16(_ string, _ i16) Message {
 	return m
 }
 
-fn (m NopMessage) int(key string, value int) Message {
+fn (m NopMessage) int(_ string, _ int) Message {
 	return m
 }
 
-fn (m NopMessage) i64(key string, value i64) Message {
+fn (m NopMessage) i64(_ string, _ i64) Message {
 	return m
 }
 
-fn (m NopMessage) u8(key string, value u8) Message {
+fn (m NopMessage) u8(_ string, _ u8) Message {
 	return m
 }
 
-fn (m NopMessage) u16(key string, value u16) Message {
+fn (m NopMessage) u16(_ string, _ u16) Message {
 	return m
 }
 
-fn (m NopMessage) u32(key string, value u32) Message {
+fn (m NopMessage) u32(_ string, _ u32) Message {
 	return m
 }
 
-fn (m NopMessage) u64(key string, value u64) Message {
+fn (m NopMessage) u64(_ string, _ u64) Message {
 	return m
 }
 
-fn (m NopMessage) rune(key string, value rune) Message {
+fn (m NopMessage) rune(_ string, _ rune) Message {
 	return m
 }
 
-fn (m NopMessage) f32(key string, value f32) Message {
+fn (m NopMessage) f32(_ string, _ f32) Message {
 	return m
 }
 
-fn (m NopMessage) f64(key string, value f64) Message {
+fn (m NopMessage) f64(_ string, _ f64) Message {
 	return m
 }
 
-fn (m NopMessage) array(key string, value []Value) Message {
+fn (m NopMessage) array(_ string, _ []Value) Message {
 	return m
 }
 
-fn (m NopMessage) map(key string, value map[string]Value) Message {
+fn (m NopMessage) map(_ string, _ map[string]Value) Message {
 	return m
 }
 
-fn (m NopMessage) strut(key string, value Loggable) Message {
+fn (m NopMessage) strut(_ string, _ Loggable) Message {
 	return m
 }
 
-fn (m NopMessage) error(key string, value IError) Message {
+fn (m NopMessage) error(_ string, _ IError) Message {
 	return m
 }
 
@@ -84,10 +84,10 @@ fn (m NopMessage) send() Message {
 	return m
 }
 
-fn (m NopMessage) try_send(error_handler ErrorHandlerFn) Message {
+fn (m NopMessage) try_send(_ ErrorHandlerFn) Message {
 	return m
 }
 
-fn (m NopMessage) message(msg string) Message {
+fn (m NopMessage) message(_ string) Message {
 	return m
 }
