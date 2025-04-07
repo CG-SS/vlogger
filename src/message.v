@@ -1,6 +1,6 @@
 module vlogger
 
-type ErrorHandlerFn = fn(IError)
+type ErrorHandlerFn = fn (IError)
 
 // Message represents a Logger message. The intention is that whoever implements the Message interface would use a
 // factory pattern in order to build a Message.

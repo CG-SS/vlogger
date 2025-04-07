@@ -7,4 +7,3 @@ struct Field {
 	key   string
 	value Value
 }
-
