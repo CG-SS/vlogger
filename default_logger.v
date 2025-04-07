@@ -14,7 +14,7 @@ struct DefaultLogger {
 
 pub struct LoggerCfg {
 	message_fieldname string          = default_message_fieldname
-	buffer_size       int             = 1024
+	buffer_size       int             = default_buffer_size
 	level             MessageLevel    = MessageLevel.info
 	write_fn          MessageWriterFn = nop_message_writer
 	hook_fns          []HookFn

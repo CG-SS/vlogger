@@ -27,3 +27,5 @@ const default_message_fieldname = 'message'
 const default_timestamp_fieldname = 'timestamp'
 
 const default_level_fieldname = 'level'
+
+const default_buffer_size = 1024
