@@ -23,3 +23,7 @@ fn (_ DefaultLoggable) fields() []Field {
 const default_loggable_val = DefaultLoggable{}
 
 const default_message_fieldname = 'message'
+
+const default_timestamp_fieldname = 'timestamp'
+
+const default_level_fieldname = 'level'

@@ -1,33 +1,45 @@
 module vlogger
 
+type MessageWriterFn = fn (Message)
+
+type HookFn = fn (Message) Message
+
 struct DefaultLogger {
-	message_fieldname string       = default_message_fieldname
-	message_chan      chan Message = chan Message{cap: 1024}
-	message_level     MessageLevel = MessageLevel.info
+	message_fieldname string          @[required]
+	message_chan      chan Message    @[required]
+	level             MessageLevel    @[required]
+	write_fn          MessageWriterFn @[required]
+	hook_fns          []HookFn
 }
 
-pub fn DefaultLogger.new() Logger {
-	default_logger := DefaultLogger{}
-
-	spawn write_message(default_logger.message_chan)
-
-	return default_logger
+pub struct LoggerCfg {
+	message_fieldname string          = default_message_fieldname
+	buffer_size       int             = 1024
+	level             MessageLevel    = MessageLevel.info
+	write_fn          MessageWriterFn = nop_message_writer
+	hook_fns          []HookFn
 }
 
-fn write_message(message_chan chan Message) {
+fn (l DefaultLogger) write_message_task() {
 	for {
-		m := <-message_chan or { break }
-		println(m)
+		m := <-l.message_chan or { break }
+
+		mut new_msg := m
+		for f in l.hook_fns {
+			new_msg = f(new_msg)
+		}
+
+		l.write_fn(new_msg)
 	}
 }
 
-fn (l DefaultLogger) create_message(message_level MessageLevel) Message {
-	if u8(l.message_level) > u8(message_level) {
+fn (l DefaultLogger) create_message(level MessageLevel) Message {
+	if u8(l.level) > u8(level) {
 		return NopMessage{}
 	}
 
 	return DefaultMessage{
-		message_level:     message_level
+		message_level:     level
 		message_chan:      l.message_chan
 		message_fieldname: l.message_fieldname
 	}
@@ -55,8 +67,4 @@ fn (l DefaultLogger) error() Message {
 
 fn (l DefaultLogger) fatal() Message {
 	return l.create_message(MessageLevel.fatal)
-}
-
-fn (l DefaultLogger) panic() Message {
-	return l.create_message(MessageLevel.panic)
 }
