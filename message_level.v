@@ -9,5 +9,10 @@ enum MessageLevel as u8 {
 	warn
 	error
 	fatal
-	panic
+}
+
+fn append_message_level_fn(level_fieldname string) HookFn {
+	return fn [level_fieldname] (msg Message) Message {
+		return msg.string(level_fieldname, msg.level().str())
+	}
 }
