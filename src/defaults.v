@@ -29,3 +29,7 @@ const default_timestamp_fieldname = 'timestamp'
 const default_level_fieldname = 'level'
 
 const default_buffer_size = 1024
+
+const default_map_val = map[string]Value{}
+
+const default_array_val = []Value{}

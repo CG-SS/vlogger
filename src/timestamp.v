@@ -2,7 +2,7 @@ module vlogger
 
 import time
 
-enum TimestampFormat {
+pub enum TimestampFormat {
 	default
 	rfc3339
 	rfc3339_micro

@@ -1,5 +1,5 @@
 module vlogger
 
-interface Loggable {
+pub interface Loggable {
 	fields() []Field
 }

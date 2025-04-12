@@ -1,6 +1,7 @@
 module vlogger
 
 pub struct MapValue {
+pub:
 	value map[string]Value
 }
 
@@ -24,7 +25,7 @@ fn (_ MapValue) i16() i16 {
 	return default_int_val
 }
 
-fn (_ MapValue) int() int {
+fn (_ MapValue) i32() i32 {
 	return default_int_val
 }
 
@@ -61,7 +62,7 @@ fn (_ MapValue) f64() f64 {
 }
 
 fn (_ MapValue) array() []Value {
-	return []
+	return default_array_val
 }
 
 fn (m MapValue) map() map[string]Value {

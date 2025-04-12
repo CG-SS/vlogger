@@ -25,7 +25,7 @@ pub fn new(cfg LoggerCfg) Logger {
 	}
 
 	mut hook_fns_new := cfg.hook_fns.clone()
-	hook_fns_new << append_message_level_fn(message_cfg.fieldname)
+	hook_fns_new << append_message_level_fn(message_cfg.level_fieldname)
 
 	timestamp_cfg := cfg.timestamp
 
@@ -39,7 +39,7 @@ pub fn new(cfg LoggerCfg) Logger {
 
 	logger := DefaultLogger{
 		message_fieldname: message_cfg.fieldname
-		message_chan:      chan Message{cap: cfg.buffer_size}
+		message_chan:      chan Message{cap: int(cfg.buffer_size)}
 		level:             message_cfg.level
 		write_fn:          cfg.write_fn
 		hook_fns:          hook_fns_new

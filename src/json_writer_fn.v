@@ -3,19 +3,25 @@ module vlogger
 import io
 import strings
 
-type ErrorHandlerFn = fn (IError)
+pub type ErrorHandlerFn = fn (IError)
 
 pub fn write_json_message_fn(error_handler_fn ErrorHandlerFn, mut writer io.Writer) MessageWriterFn {
-	return fn [error_handler_fn, mut writer] (message Message) {
-		fields_str := message.fields().map(field_to_json_str)
+	return fn [mut writer, error_handler_fn] (msg Message) {
+		msg_json_str := loggable_to_json_str(msg as Loggable)
 
-		mut sb := strings.new_builder(2)
-		sb.write_string('{')
-		sb.write_string(fields_str.join(','))
-		sb.write_string('}\n')
-
-		writer.write(sb) or { error_handler_fn(err) }
+		writer.write('${msg_json_str}\n'.bytes()) or { error_handler_fn(err) }
 	}
+}
+
+fn loggable_to_json_str(loggable Loggable) string {
+	fields_str := loggable.fields().map(field_to_json_str)
+
+	mut sb := strings.new_builder(2)
+	sb.write_string('{')
+	sb.write_string(fields_str.join(','))
+	sb.write_string('}')
+
+	return sb.str()
 }
 
 fn field_to_json_str(field Field) string {
@@ -57,8 +63,8 @@ fn value_to_json_str(val Value) string {
 		.u16 {
 			return val.u16().str()
 		}
-		.int {
-			return val.int().str()
+		.i32 {
+			return val.i32().str()
 		}
 		.u32 {
 			return val.u32().str()
@@ -97,7 +103,7 @@ fn value_to_json_str(val Value) string {
 			return sb.str()
 		}
 		.strut {
-			return '"${val.strut()}"'
+			return loggable_to_json_str(val.strut())
 		}
 		.error {
 			return '"${val.error().str()}"'
