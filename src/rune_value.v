@@ -1,6 +1,7 @@
 module vlogger
 
 pub struct RuneValue {
+pub:
 	value rune
 }
 
@@ -24,7 +25,7 @@ fn (_ RuneValue) i16() i16 {
 	return default_int_val
 }
 
-fn (_ RuneValue) int() int {
+fn (_ RuneValue) i32() i32 {
 	return default_int_val
 }
 
@@ -49,7 +50,7 @@ fn (_ RuneValue) u64() u64 {
 }
 
 fn (r RuneValue) rune() rune {
-	return r.rune
+	return r.value
 }
 
 fn (_ RuneValue) f32() f32 {
@@ -61,11 +62,11 @@ fn (_ RuneValue) f64() f64 {
 }
 
 fn (_ RuneValue) array() []Value {
-	return []
+	return default_array_val
 }
 
 fn (_ RuneValue) map() map[string]Value {
-	return map[string]Value{}
+	return default_map_val
 }
 
 fn (_ RuneValue) strut() Loggable {

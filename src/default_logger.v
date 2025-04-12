@@ -1,8 +1,8 @@
 module vlogger
 
-type MessageWriterFn = fn (Message)
+pub type MessageWriterFn = fn (Message)
 
-type HookFn = fn (Message) Message
+pub type HookFn = fn (Message) Message
 
 struct DefaultLogger {
 	message_fieldname string          @[required]
@@ -12,12 +12,28 @@ struct DefaultLogger {
 	hook_fns          []HookFn
 }
 
+pub struct TimestampCfg {
+pub:
+	enabled   bool            = true
+	fieldname string          = default_timestamp_fieldname
+	format    TimestampFormat = .default
+	custom    string
+}
+
+pub struct MessageCfg {
+pub:
+	fieldname       string       = default_message_fieldname
+	level           MessageLevel = MessageLevel.info
+	level_fieldname string       = default_level_fieldname
+}
+
 pub struct LoggerCfg {
-	message_fieldname string          = default_message_fieldname
-	buffer_size       int             = default_buffer_size
-	level             MessageLevel    = MessageLevel.info
-	write_fn          MessageWriterFn = nop_message_writer
-	hook_fns          []HookFn
+pub:
+	buffer_size i32             = default_buffer_size
+	write_fn    MessageWriterFn = nop_message_writer
+	hook_fns    []HookFn
+	timestamp   TimestampCfg
+	message     MessageCfg
 }
 
 fn (l DefaultLogger) write_message_task() {

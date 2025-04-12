@@ -1,6 +1,7 @@
 module vlogger
 
 pub struct ErrorValue {
+pub:
 	value IError
 }
 
@@ -24,7 +25,7 @@ fn (_ ErrorValue) i16() i16 {
 	return default_int_val
 }
 
-fn (_ ErrorValue) int() int {
+fn (_ ErrorValue) i32() i32 {
 	return default_int_val
 }
 
@@ -61,11 +62,11 @@ fn (_ ErrorValue) f64() f64 {
 }
 
 fn (_ ErrorValue) array() []Value {
-	return []
+	return default_array_val
 }
 
 fn (_ ErrorValue) map() map[string]Value {
-	return map[string]Value{}
+	return default_map_val
 }
 
 fn (_ ErrorValue) strut() Loggable {

@@ -1,6 +1,7 @@
 module vlogger
 
 pub struct StringValue {
+pub:
 	value string
 }
 
@@ -24,7 +25,7 @@ fn (_ StringValue) i16() i16 {
 	return default_int_val
 }
 
-fn (_ StringValue) int() int {
+fn (_ StringValue) i32() i32 {
 	return default_int_val
 }
 
@@ -61,11 +62,11 @@ fn (_ StringValue) f64() f64 {
 }
 
 fn (_ StringValue) array() []Value {
-	return []
+	return default_array_val
 }
 
 fn (_ StringValue) map() map[string]Value {
-	return map[string]Value{}
+	return default_map_val
 }
 
 fn (_ StringValue) strut() Loggable {

@@ -8,13 +8,13 @@ module vlogger
 // All the functions are meant to be safe, that is, if you wrongly call one of the value functions, they will return a
 // default value, there is no 'panic' or error that is returned. For instance, if you call UInt on a Float32Type, it
 // should return defaultIntVal.
-interface Value {
+pub interface Value {
 	primitive_type() PrimitiveType
 	bool() bool
 	string() string
 	i8() i8
 	i16() i16
-	int() int
+	i32() i32
 	i64() i64
 	u8() u8
 	u16() u16
