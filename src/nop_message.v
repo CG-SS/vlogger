@@ -28,7 +28,7 @@ fn (m NopMessage) i16(_ string, _ i16) Message {
 	return m
 }
 
-fn (m NopMessage) int(_ string, _ int) Message {
+fn (m NopMessage) i32(_ string, _ i32) Message {
 	return m
 }
 
@@ -76,7 +76,7 @@ fn (m NopMessage) strut(_ string, _ Loggable) Message {
 	return m
 }
 
-fn (m NopMessage) error(_ string, _ IError) Message {
+fn (m NopMessage) err(_ string, _ IError) Message {
 	return m
 }
 

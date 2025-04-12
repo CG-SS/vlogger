@@ -55,10 +55,10 @@ fn (m DefaultMessage) i16(key string, value i16) Message {
 	})
 }
 
-fn (m DefaultMessage) int(key string, value int) Message {
+fn (m DefaultMessage) i32(key string, value i32) Message {
 	return m.append_field(Field{
 		key:   key
-		value: IntValue{value}
+		value: I32Value{value}
 	})
 }
 
@@ -139,7 +139,7 @@ fn (m DefaultMessage) strut(key string, value Loggable) Message {
 	})
 }
 
-fn (m DefaultMessage) error(key string, value IError) Message {
+fn (m DefaultMessage) err(key string, value IError) Message {
 	return m.append_field(Field{
 		key:   key
 		value: ErrorValue{value}
