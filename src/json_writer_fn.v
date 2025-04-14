@@ -6,8 +6,8 @@ import strings
 pub type ErrorHandlerFn = fn (IError)
 
 pub fn write_json_message_fn(error_handler_fn ErrorHandlerFn, mut writer io.Writer) MessageWriterFn {
-	return fn [mut writer, error_handler_fn] (msg Message) {
-		msg_json_str := loggable_to_json_str(msg as Loggable)
+	return fn [mut writer, error_handler_fn] (msg Loggable) {
+		msg_json_str := loggable_to_json_str(msg)
 
 		writer.write('${msg_json_str}\n'.bytes()) or { error_handler_fn(err) }
 	}
@@ -87,7 +87,7 @@ fn value_to_json_str(val Value) string {
 		.array {
 			array_val := val.array().map(value_to_json_str)
 
-			return '${array_val.join(',')}'
+			return '[${array_val.join(',')}]'
 		}
 		.map {
 			mut sb := strings.new_builder(2)

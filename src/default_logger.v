@@ -1,6 +1,6 @@
 module vlogger
 
-pub type MessageWriterFn = fn (Message)
+pub type MessageWriterFn = fn (Loggable)
 
 pub type HookFn = fn (Message) Message
 
@@ -45,7 +45,7 @@ fn (l DefaultLogger) write_message_task() {
 			new_msg = f(new_msg)
 		}
 
-		l.write_fn(new_msg)
+		l.write_fn(new_msg as Loggable)
 	}
 }
 

@@ -1,21 +1,21 @@
 module vlogger
 
 fn test_default_logger_writes_message() {
-	receiver_chan := chan Message{}
+	receiver_chan := chan Loggable{}
 	defer { receiver_chan.close() }
 
 	logger := DefaultLogger{
 		message_fieldname: 'field_test'
 		message_chan:      chan Message{}
 		level:             .info
-		write_fn:          fn [receiver_chan] (msg Message) {
+		write_fn:          fn [receiver_chan] (msg Loggable) {
 			receiver_chan <- msg
 		}
 	}
 
 	spawn logger.write_message_task()
 
-	mut wrote_msgs := []Message{cap: 2}
+	mut wrote_msgs := []Loggable{cap: 2}
 
 	logger.info().message('test msg')
 	wrote_msgs << <-receiver_chan
@@ -62,21 +62,21 @@ fn test_default_logger_hook_fns() {
 }
 
 fn test_default_logger_level() {
-	receiver_chan := chan Message{}
+	receiver_chan := chan Loggable{}
 	defer { receiver_chan.close() }
 
 	logger := DefaultLogger{
 		message_fieldname: 'field_test'
 		message_chan:      chan Message{}
 		level:             .fatal
-		write_fn:          fn [receiver_chan] (msg Message) {
+		write_fn:          fn [receiver_chan] (msg Loggable) {
 			receiver_chan <- msg
 		}
 	}
 
 	spawn logger.write_message_task()
 
-	mut wrote_msgs := []Message{cap: 1}
+	mut wrote_msgs := []Loggable{cap: 1}
 
 	logger.trace().message('msg')
 	logger.debug().message('msg')
