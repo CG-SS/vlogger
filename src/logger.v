@@ -10,6 +10,7 @@ pub interface Logger {
 	warn() Message
 	error() Message
 	fatal() Message
+	close()
 }
 
 pub fn default(mut out io.Writer) Logger {
@@ -37,15 +38,20 @@ pub fn new(cfg LoggerCfg) Logger {
 		}
 	}
 
-	logger := DefaultLogger{
-		message_fieldname: message_cfg.fieldname
-		message_chan:      chan Message{cap: int(cfg.buffer_size)}
-		level:             message_cfg.level
-		write_fn:          cfg.write_fn
-		hook_fns:          hook_fns_new
+	message_chan := chan Message{cap: int(cfg.buffer_size)}
+
+	writer_task := WriterTask{
+		write_fn:     cfg.write_fn
+		hook_fns:     hook_fns_new
+		message_chan: message_chan
 	}
 
-	spawn logger.write_message_task()
+	logger := DefaultLogger{
+		message_fieldname: message_cfg.fieldname
+		message_chan:      message_chan
+		level:             message_cfg.level
+		writer_thr:        spawn writer_task.start()
+	}
 
 	return logger
 }

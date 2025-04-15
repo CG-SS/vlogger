@@ -5,11 +5,16 @@ pub type MessageWriterFn = fn (Loggable)
 pub type HookFn = fn (Message) Message
 
 struct DefaultLogger {
-	message_fieldname string          @[required]
-	message_chan      chan Message    @[required]
-	level             MessageLevel    @[required]
-	write_fn          MessageWriterFn @[required]
-	hook_fns          []HookFn
+	message_fieldname string       @[required]
+	message_chan      chan Message @[required]
+	level             MessageLevel @[required]
+	writer_thr        thread
+}
+
+struct WriterTask {
+	write_fn     MessageWriterFn @[required]
+	message_chan chan Message    @[required]
+	hook_fns     []HookFn
 }
 
 pub struct TimestampCfg {
@@ -36,16 +41,16 @@ pub:
 	message     MessageCfg
 }
 
-fn (l DefaultLogger) write_message_task() {
+fn (w WriterTask) start() {
 	for {
-		m := <-l.message_chan or { break }
+		m := <-w.message_chan or { break }
 
 		mut new_msg := m
-		for f in l.hook_fns {
+		for f in w.hook_fns {
 			new_msg = f(new_msg)
 		}
 
-		l.write_fn(new_msg as Loggable)
+		w.write_fn(new_msg as Loggable)
 	}
 }
 
@@ -83,4 +88,9 @@ fn (l DefaultLogger) error() Message {
 
 fn (l DefaultLogger) fatal() Message {
 	return l.create_message(MessageLevel.fatal)
+}
+
+fn (l DefaultLogger) close() {
+	l.message_chan.close()
+	l.writer_thr.wait()
 }

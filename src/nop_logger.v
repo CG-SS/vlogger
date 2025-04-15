@@ -26,3 +26,6 @@ fn (_ NopLogger) error() Message {
 fn (_ NopLogger) fatal() Message {
 	return NopMessage{}
 }
+
+fn (_ NopLogger) close() {
+}

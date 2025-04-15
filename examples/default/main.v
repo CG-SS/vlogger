@@ -27,6 +27,7 @@ fn main() {
 	defer { out.close() }
 
 	logger := vlogger.default(mut out)
+	defer { logger.close() }
 
 	logger.trace().bool('hello', false).send()
 	logger.debug().u8('number', 8).string('test', 'this is a test').f32('float_val', 3.66).send()
@@ -38,5 +39,4 @@ fn main() {
 		age:  19
 	}).send()
 	logger.fatal().err('error', error('failure')).send()
-	time.sleep(1 * time.second)
 }
