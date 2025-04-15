@@ -7,13 +7,18 @@ Defaults to writing messages asynchronously using an internal channel.
 ## Usage
 
 ```vlang
-mut level_writer := vlogger.SingleWriter{
-		error_handler: fn (e IError) {println(e)}
-		writer: os.stdout()
-	}
+import os
+import vlogger
 
-log := vlogger.new_logger().with_buffer_size(4096).logger(mut level_writer)
-log.info().kv("hello", "there").kv("test", true).kv("n", 1).send()
+fn main() {
+	mut out := os.stdout()
+	defer { out.close() }
+
+	logger := vlogger.default(mut out)
+	defer {logger.close()}
+
+	logger.trace().bool('hello', false).send()
+}
 ```
 
 
