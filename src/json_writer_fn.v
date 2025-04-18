@@ -25,13 +25,23 @@ fn loggable_to_json_str(loggable Loggable) string {
 }
 
 fn field_to_json_str(field Field) string {
+	field_key := field.key
+	if field_key.is_blank() {
+		return ''
+	}
+
 	mut sb := strings.new_builder(3)
 	sb.write_string('"')
-	sb.write_string(field.key)
+	sb.write_string(field_key)
 	sb.write_string('":')
 	sb.write_string(value_to_json_str(field.value))
 
 	return sb.str()
+}
+
+struct MapValueTuple {
+	key   string
+	value string
 }
 
 fn value_to_json_str(val Value) string {
@@ -48,7 +58,12 @@ fn value_to_json_str(val Value) string {
 			if str_val.len == 0 {
 				return '""'
 			} else {
-				return '"${str_val}"'
+				mut sb := strings.new_builder(2 + str_val.len)
+				sb.write_byte(34) // "
+				sb.write_string(str_val)
+				sb.write_byte(34) // "
+
+				return sb.str()
 			}
 		}
 		.i8 {
@@ -85,28 +100,71 @@ fn value_to_json_str(val Value) string {
 			return val.f64().str()
 		}
 		.array {
-			array_val := val.array().map(value_to_json_str)
+			array_val := val.array()
+			if array_val.len == 0 {
+				return '[]'
+			} else {
+				array_val_str := array_val.map(value_to_json_str)
 
-			return '[${array_val.join(',')}]'
+				mut total_size := 0
+				for s in array_val_str {
+					total_size += s.len
+				}
+				mut sb := strings.new_builder(total_size + (array_val_str.len - 1))
+				sb.write_byte(91) // [
+				sb.write_string(array_val_str.join(','))
+				sb.write_byte(93) // ]
+
+				return sb.str()
+			}
 		}
 		.map {
-			mut sb := strings.new_builder(2)
-			sb.write_string('{')
-			for k, v in val.map() {
-				sb.write_string('"')
-				sb.write_string(k)
-				sb.write_string('":')
-				sb.write_string(value_to_json_str(v))
-			}
-			sb.write_string('}')
+			val_map := val.map()
+			if val_map.len == 0 {
+				return '{}'
+			} else {
+				mut tuple_map := []MapValueTuple{cap: val_map.len}
+				mut total_size := 0
+				for k, v in val_map {
+					total_size += k.len
+					value_str := value_to_json_str(v)
+					total_size += value_str.len
 
-			return sb.str()
+					tuple_map << MapValueTuple{
+						key:   k
+						value: value_str
+					}
+				}
+
+				mut sb := strings.new_builder(2 + total_size + (3 * tuple_map.len))
+				sb.write_byte(123) // {
+				for tuple in tuple_map {
+					sb.write_byte(34) // "
+					sb.write_string(tuple.key)
+					sb.write_byte(34) // "
+					sb.write_byte(58) // :
+					sb.write_string(tuple.value)
+				}
+				sb.write_byte(125) // }
+
+				return sb.str()
+			}
 		}
 		.strut {
 			return loggable_to_json_str(val.strut())
 		}
 		.error {
-			return '"${val.error().str()}"'
+			err_str := val.error().str()
+			if err_str.len == 0 {
+				return '""'
+			} else {
+				mut sb := strings.new_builder(2 + err_str.len)
+				sb.write_byte(34) // "
+				sb.write_string(err_str)
+				sb.write_byte(34) // "
+
+				return sb.str()
+			}
 		}
 	}
 }
