@@ -1,7 +1,6 @@
 module main
 
 import vlogger
-import time
 import os
 
 struct LoggableStrut {
@@ -38,5 +37,7 @@ fn main() {
 		name: 'John'
 		age:  19
 	}).send()
+	logger.info().array('nodes', [vlogger.StringValue{'hello'},
+		vlogger.StringValue{'there'}]).send()
 	logger.fatal().err('error', error('failure')).send()
 }
