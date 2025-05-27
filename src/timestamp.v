@@ -19,7 +19,7 @@ pub enum TimestampFormat {
 }
 
 fn append_custom_timestamp_fn(custom_format string, timestamp_field_name string) HookFn {
-	return fn [timestamp_field_name, custom_format] (msg Message) Message {
+	return fn [timestamp_field_name, custom_format] (msg DefaultMessage) ?DefaultMessage {
 		now := time.now()
 
 		return msg.string(timestamp_field_name, now.custom_format(custom_format))
@@ -27,7 +27,7 @@ fn append_custom_timestamp_fn(custom_format string, timestamp_field_name string)
 }
 
 fn append_timestamp_fn(format TimestampFormat, timestamp_field_name string) HookFn {
-	return fn [format, timestamp_field_name] (msg Message) Message {
+	return fn [format, timestamp_field_name] (msg DefaultMessage) ?DefaultMessage {
 		now := time.now()
 
 		match format {

@@ -2,158 +2,155 @@ module vlogger
 
 struct DefaultMessage {
 	message_fieldname string
-	message_chan      chan Message
+	message_chan      chan DefaultMessage
 	fields            []Field
-	message_level     MessageLevel
+pub:
+	level MessageLevel
 }
 
-fn (m DefaultMessage) append_field(field Field) Message {
+fn (m DefaultMessage) append_field(field Field) DefaultMessage {
 	mut new_fields := m.fields.clone()
 	new_fields << field
 
 	return DefaultMessage{
 		message_fieldname: m.message_fieldname
 		message_chan:      m.message_chan
-		message_level:     m.message_level
+		level:             m.level
 		fields:            new_fields
 	}
 }
 
-fn (m DefaultMessage) level() MessageLevel {
-	return m.message_level
-}
-
-fn (m DefaultMessage) fields() []Field {
+pub fn (m DefaultMessage) fields() []Field {
 	return m.fields
 }
 
-fn (m DefaultMessage) bool(key string, value bool) Message {
+pub fn (m DefaultMessage) bool(key string, value bool) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: BoolValue{value}
 	})
 }
 
-fn (m DefaultMessage) string(key string, value string) Message {
+pub fn (m DefaultMessage) string(key string, value string) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: StringValue{value}
 	})
 }
 
-fn (m DefaultMessage) i8(key string, value i8) Message {
+pub fn (m DefaultMessage) i8(key string, value i8) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: I8Value{value}
 	})
 }
 
-fn (m DefaultMessage) i16(key string, value i16) Message {
+pub fn (m DefaultMessage) i16(key string, value i16) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: I16Value{value}
 	})
 }
 
-fn (m DefaultMessage) i32(key string, value i32) Message {
+pub fn (m DefaultMessage) i32(key string, value i32) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: I32Value{value}
 	})
 }
 
-fn (m DefaultMessage) i64(key string, value i64) Message {
+pub fn (m DefaultMessage) i64(key string, value i64) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: I64Value{value}
 	})
 }
 
-fn (m DefaultMessage) u8(key string, value u8) Message {
+pub fn (m DefaultMessage) u8(key string, value u8) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: U8Value{value}
 	})
 }
 
-fn (m DefaultMessage) u16(key string, value u16) Message {
+pub fn (m DefaultMessage) u16(key string, value u16) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: U16Value{value}
 	})
 }
 
-fn (m DefaultMessage) u32(key string, value u32) Message {
+pub fn (m DefaultMessage) u32(key string, value u32) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: U32Value{value}
 	})
 }
 
-fn (m DefaultMessage) u64(key string, value u64) Message {
+pub fn (m DefaultMessage) u64(key string, value u64) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: U64Value{value}
 	})
 }
 
-fn (m DefaultMessage) rune(key string, value rune) Message {
+pub fn (m DefaultMessage) rune(key string, value rune) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: RuneValue{value}
 	})
 }
 
-fn (m DefaultMessage) f32(key string, value f32) Message {
+pub fn (m DefaultMessage) f32(key string, value f32) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: F32Value{value}
 	})
 }
 
-fn (m DefaultMessage) f64(key string, value f64) Message {
+pub fn (m DefaultMessage) f64(key string, value f64) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: F64Value{value}
 	})
 }
 
-fn (m DefaultMessage) array(key string, value []Value) Message {
+pub fn (m DefaultMessage) array(key string, value []Value) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: ArrayValue{value}
 	})
 }
 
-fn (m DefaultMessage) map(key string, value map[string]Value) Message {
+pub fn (m DefaultMessage) map(key string, value map[string]Value) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: MapValue{value}
 	})
 }
 
-fn (m DefaultMessage) strut(key string, value Loggable) Message {
+pub fn (m DefaultMessage) strut(key string, value Loggable) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: StrutValue{value}
 	})
 }
 
-fn (m DefaultMessage) err(key string, value IError) Message {
+pub fn (m DefaultMessage) err(key string, value IError) DefaultMessage {
 	return m.append_field(Field{
 		key:   key
 		value: ErrorValue{value}
 	})
 }
 
-fn (m DefaultMessage) send() Message {
-	m.message_chan <- Message(m)
+pub fn (m DefaultMessage) send() DefaultMessage {
+	m.message_chan <- m
 
 	return m
 }
 
-fn (m DefaultMessage) try_send(error_handler ErrorHandlerFn) Message {
-	result := m.message_chan.try_push(Message(m))
+pub fn (m DefaultMessage) try_send(error_handler ErrorHandlerFn) DefaultMessage {
+	result := m.message_chan.try_push(m)
 	if result != .success {
 		error_handler(error('failed writing to channel: ${result}'))
 	}
@@ -161,7 +158,7 @@ fn (m DefaultMessage) try_send(error_handler ErrorHandlerFn) Message {
 	return m
 }
 
-fn (m DefaultMessage) message(msg string) Message {
+pub fn (m DefaultMessage) message(msg string) DefaultMessage {
 	m.string(m.message_fieldname, msg).send()
 
 	return m

@@ -3,27 +3,27 @@ module vlogger
 struct NopLogger {
 }
 
-fn (_ NopLogger) trace() Message {
+fn (_ NopLogger) trace() NopMessage {
 	return NopMessage{}
 }
 
-fn (_ NopLogger) debug() Message {
+fn (_ NopLogger) debug() NopMessage {
 	return NopMessage{}
 }
 
-fn (_ NopLogger) info() Message {
+fn (_ NopLogger) info() NopMessage {
 	return NopMessage{}
 }
 
-fn (_ NopLogger) warn() Message {
+fn (_ NopLogger) warn() NopMessage {
 	return NopMessage{}
 }
 
-fn (_ NopLogger) error() Message {
+fn (_ NopLogger) error() NopMessage {
 	return NopMessage{}
 }
 
-fn (_ NopLogger) fatal() Message {
+fn (_ NopLogger) fatal() NopMessage {
 	return NopMessage{}
 }
 
