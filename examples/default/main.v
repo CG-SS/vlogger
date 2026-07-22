@@ -12,13 +12,21 @@ fn (l LoggableStrut) fields() []vlogger.Field {
 	return [
 		vlogger.Field{
 			key:   'name'
-			value: vlogger.StringValue{l.name}
+			value: l.name
 		},
 		vlogger.Field{
 			key:   'age'
-			value: vlogger.I32Value{l.age}
+			value: l.age
 		},
 	]
+}
+
+struct Ip {
+	octets []u8
+}
+
+fn (i Ip) render() string {
+	return i.octets.map(it.str()).join('.')
 }
 
 fn main() {
@@ -50,7 +58,9 @@ fn main() {
 		age:  19
 	}).send()
 
-	logger.info().array('nodes', [vlogger.StringValue{'hello'},
-		vlogger.StringValue{'there'}]).send()
+	logger.info().array('nodes', [vlogger.Value('hello'), vlogger.Value('there')]).send()
+
+	// a type that renders itself as a scalar, via the Renderable extension point
+	logger.info().custom('bind', Ip{[u8(192), 168, 0, 1]}).send()
 	logger.fatal().err('error', error('failure')).send()
 }

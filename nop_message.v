@@ -88,6 +88,5 @@ fn (m NopMessage) try_send(_ ErrorHandlerFn) NopMessage {
 	return m
 }
 
-fn (m NopMessage) message(_ string) NopMessage {
-	return m
-}
+// message mirrors DefaultMessage.message, which is terminal and returns nothing.
+fn (_ NopMessage) message(_ string) {}

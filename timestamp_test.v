@@ -33,13 +33,13 @@ fn test_append_timestamp_fn_normal_formats() {
 
 		field_value := fields[0].value
 		match field_value {
-			StringValue {
-				time.parse_format(field_value.value, test.expect_format) or {
+			string {
+				time.parse_format(field_value, test.expect_format) or {
 					assert false, 'parse_format failed: ${err}'
 				}
 			}
 			else {
-				assert false, 'should be a StringValue'
+				assert false, 'should be a string'
 			}
 		}
 	}
@@ -75,13 +75,11 @@ fn test_append_timestamp_fn_rfc3339_format() {
 
 		field_value := fields[0].value
 		match field_value {
-			StringValue {
-				time.parse_rfc3339(field_value.value) or {
-					assert false, 'parse_rfc3339 failed: ${err}'
-				}
+			string {
+				time.parse_rfc3339(field_value) or { assert false, 'parse_rfc3339 failed: ${err}' }
 			}
 			else {
-				assert false, 'should be a StringValue'
+				assert false, 'should be a string'
 			}
 		}
 	}
@@ -116,9 +114,9 @@ fn test_append_timestamp_fn_unix_format() {
 
 		field_value := fields[0].value
 		match field_value {
-			I64Value {}
+			i64 {}
 			else {
-				assert false, 'should be a I64Value'
+				assert false, 'should be an i64'
 			}
 		}
 	}

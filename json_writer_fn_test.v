@@ -12,11 +12,11 @@ fn (l LoggableStrut) fields() []Field {
 	return [
 		Field{
 			key:   'name'
-			value: StringValue{l.name}
+			value: l.name
 		},
 		Field{
 			key:   'age'
-			value: I32Value{l.age}
+			value: i32(l.age)
 		},
 	]
 }
@@ -52,61 +52,61 @@ fn test_write_json_message_fn_successful() {
 		ar: [
 			Field{
 				key:   'count'
-				value: I32Value{39}
+				value: i32(39)
 			},
 			Field{
 				key:   'node_name'
-				value: StringValue{'root'}
+				value: 'root'
 			},
 			Field{
 				key:   'accuracy'
-				value: F32Value{98.6}
+				value: f32(98.6)
 			},
 			Field{
 				key:   'obj'
-				value: StrutValue{LoggableStrut{
+				value: Nested{LoggableStrut{
 					name: 'john'
 					age:  19
 				}}
 			},
 			Field{
 				key:   'array'
-				value: ArrayValue{[
-					F64Value{786.443},
-					BoolValue{true},
-				]}
+				value: [
+					Value(f64(786.443)),
+					Value(true),
+				]
 			},
 			Field{
 				key:   'money'
-				value: I64Value{532803274382056}
+				value: i64(532803274382056)
 			},
 			Field{
 				key:   'err'
-				value: ErrorValue{error('this is an error')}
+				value: Err{error('this is an error')}
 			},
 			Field{
 				key:   'i8_val'
-				value: I8Value{-6}
+				value: i8(-6)
 			},
 			Field{
 				key:   'i16_val'
-				value: I16Value{-7953}
+				value: i16(-7953)
 			},
 			Field{
 				key:   'u8_val'
-				value: U8Value{201}
+				value: u8(201)
 			},
 			Field{
 				key:   'u16_val'
-				value: U16Value{6843}
+				value: u16(6843)
 			},
 			Field{
 				key:   'u32_val'
-				value: U32Value{1649233}
+				value: u32(1649233)
 			},
 			Field{
 				key:   'u64_val'
-				value: U64Value{1649233542109}
+				value: u64(1649233542109)
 			},
 		]
 	}
@@ -135,6 +135,7 @@ fn test_write_json_message_fn_successful() {
 			assert false, 'should be a f64'
 		}
 	}
+
 	match output.array[1] {
 		f64 {
 			assert false, 'should be a bool'

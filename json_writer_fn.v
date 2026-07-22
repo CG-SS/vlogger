@@ -5,6 +5,9 @@ import strings
 
 pub type ErrorHandlerFn = fn (IError)
 
+// write_json_message_fn returns a MessageWriterFn that encodes each message as
+// a single line of JSON and writes it to writer. Any write error is passed to
+// error_handler_fn.
 pub fn write_json_message_fn(error_handler_fn ErrorHandlerFn, mut writer io.Writer) MessageWriterFn {
 	return fn [mut writer, error_handler_fn] (msg Loggable) {
 		msg_json_str := loggable_to_json_str(msg)
@@ -13,8 +16,78 @@ pub fn write_json_message_fn(error_handler_fn ErrorHandlerFn, mut writer io.Writ
 	}
 }
 
+// json_escape_string returns s with every character that JSON forbids inside a
+// string literal replaced by its escape sequence. Without this, any user
+// supplied value containing a quote, a backslash or a control character would
+// produce a record that no JSON parser accepts, and an embedded newline would
+// split one record across two physical lines.
+fn json_escape_string(s string) string {
+	// the overwhelmingly common case is a value that needs no escaping at all,
+	// so scan first and only build a new string when there is work to do
+	mut needs_escaping := false
+	for c in s {
+		if c < 32 || c == 34 || c == 92 { // control, " or \
+			needs_escaping = true
+			break
+		}
+	}
+	if !needs_escaping {
+		return s
+	}
+
+	mut sb := strings.new_builder(s.len + 16)
+	for c in s {
+		match c {
+			34 {
+				sb.write_string('\\"')
+			} // "
+			92 {
+				sb.write_string('\\\\')
+			} // \
+			8 {
+				sb.write_string('\\b')
+			}
+			9 {
+				sb.write_string('\\t')
+			}
+			10 {
+				sb.write_string('\\n')
+			}
+			12 {
+				sb.write_string('\\f')
+			}
+			13 {
+				sb.write_string('\\r')
+			}
+			else {
+				if c < 32 {
+					sb.write_string('\\u${c:04x}')
+				} else {
+					sb.write_byte(c)
+				}
+			}
+		}
+	}
+
+	return sb.str()
+}
+
+// json_quote_string returns s escaped and wrapped in double quotes.
+fn json_quote_string(s string) string {
+	escaped := json_escape_string(s)
+
+	mut sb := strings.new_builder(escaped.len + 2)
+	sb.write_byte(34) // "
+	sb.write_string(escaped)
+	sb.write_byte(34) // "
+
+	return sb.str()
+}
+
 fn loggable_to_json_str(loggable Loggable) string {
-	fields_str := loggable.fields().map(field_to_json_str)
+	// fields with a blank key serialise to nothing, so drop them before joining,
+	// otherwise the join leaves a stray separator behind and the record is invalid
+	fields_str := loggable.fields().map(field_to_json_str).filter(it.len > 0)
 
 	mut sb := strings.new_builder(2)
 	sb.write_string('{')
@@ -31,140 +104,88 @@ fn field_to_json_str(field Field) string {
 	}
 
 	mut sb := strings.new_builder(3)
-	sb.write_string('"')
-	sb.write_string(field_key)
-	sb.write_string('":')
+	sb.write_string(json_quote_string(field_key))
+	sb.write_string(':')
 	sb.write_string(value_to_json_str(field.value))
 
 	return sb.str()
 }
 
-struct MapValueTuple {
-	key   string
-	value string
-}
-
+// value_to_json_str renders a Value as JSON.
+//
+// The match is over the sum type itself, so each branch already holds the
+// payload at its real type. There is no separate tag to consult and no way to
+// read a value as something it is not. Adding a variant to Value makes this
+// match fail to compile until the new case is handled.
 fn value_to_json_str(val Value) string {
-	match val.primitive_type() {
-		.bool {
-			if val.bool() {
-				return 'true'
-			} else {
-				return 'false'
-			}
+	match val {
+		bool {
+			return if val { 'true' } else { 'false' }
 		}
-		.string {
-			str_val := val.string()
-			if str_val.len == 0 {
-				return '""'
-			} else {
-				mut sb := strings.new_builder(2 + str_val.len)
-				sb.write_byte(34) // "
-				sb.write_string(str_val)
-				sb.write_byte(34) // "
-
-				return sb.str()
-			}
+		string {
+			return json_quote_string(val)
 		}
-		.i8 {
-			return val.i8().str()
+		i8, i16, i32, i64 {
+			return val.str()
 		}
-		.u8 {
-			return val.u8().str()
+		u8, u16, u32, u64 {
+			return val.str()
 		}
-		.i16 {
-			return val.i16().str()
+		f32, f64 {
+			return val.str()
 		}
-		.u16 {
-			return val.u16().str()
+		rune {
+			// JSON has no character type, so a rune is emitted as a one character string
+			return json_quote_string(val.str())
 		}
-		.i32 {
-			return val.i32().str()
-		}
-		.u32 {
-			return val.u32().str()
-		}
-		.i64 {
-			return val.i64().str()
-		}
-		.u64 {
-			return val.u64().str()
-		}
-		.rune {
-			return val.rune().str()
-		}
-		.f32 {
-			return val.f32().str()
-		}
-		.f64 {
-			return val.f64().str()
-		}
-		.array {
-			array_val := val.array()
-			if array_val.len == 0 {
+		[]Value {
+			if val.len == 0 {
 				return '[]'
-			} else {
-				array_val_str := array_val.map(value_to_json_str)
-
-				mut total_size := 0
-				for s in array_val_str {
-					total_size += s.len
-				}
-				mut sb := strings.new_builder(total_size + (array_val_str.len - 1))
-				sb.write_byte(91) // [
-				sb.write_string(array_val_str.join(','))
-				sb.write_byte(93) // ]
-
-				return sb.str()
 			}
+
+			items := val.map(value_to_json_str)
+
+			mut total_size := 0
+			for s in items {
+				total_size += s.len
+			}
+
+			mut sb := strings.new_builder(2 + total_size + items.len)
+			sb.write_byte(91) // [
+			sb.write_string(items.join(','))
+			sb.write_byte(93) // ]
+
+			return sb.str()
 		}
-		.map {
-			val_map := val.map()
-			if val_map.len == 0 {
+		map[string]Value {
+			if val.len == 0 {
 				return '{}'
-			} else {
-				mut tuple_map := []MapValueTuple{cap: val_map.len}
-				mut total_size := 0
-				for k, v in val_map {
-					total_size += k.len
-					value_str := value_to_json_str(v)
-					total_size += value_str.len
-
-					tuple_map << MapValueTuple{
-						key:   k
-						value: value_str
-					}
-				}
-
-				mut sb := strings.new_builder(2 + total_size + (3 * tuple_map.len))
-				sb.write_byte(123) // {
-				for tuple in tuple_map {
-					sb.write_byte(34) // "
-					sb.write_string(tuple.key)
-					sb.write_byte(34) // "
-					sb.write_byte(58) // :
-					sb.write_string(tuple.value)
-				}
-				sb.write_byte(125) // }
-
-				return sb.str()
 			}
-		}
-		.strut {
-			return loggable_to_json_str(val.strut())
-		}
-		.error {
-			err_str := val.error().str()
-			if err_str.len == 0 {
-				return '""'
-			} else {
-				mut sb := strings.new_builder(2 + err_str.len)
-				sb.write_byte(34) // "
-				sb.write_string(err_str)
-				sb.write_byte(34) // "
 
-				return sb.str()
+			mut entries := []string{cap: val.len}
+			mut total_size := 0
+			for k, v in val {
+				entry := '${json_quote_string(k)}:${value_to_json_str(v)}'
+				total_size += entry.len
+				entries << entry
 			}
+
+			// entries must be comma separated, or the object is unparseable
+			mut sb := strings.new_builder(2 + total_size + entries.len)
+			sb.write_byte(123) // {
+			sb.write_string(entries.join(','))
+			sb.write_byte(125) // }
+
+			return sb.str()
+		}
+		Nested {
+			return loggable_to_json_str(val.inner)
+		}
+		Err {
+			return json_quote_string(val.inner.str())
+		}
+		Custom {
+			return json_quote_string(val.inner.render())
 		}
 	}
 }

@@ -20,7 +20,7 @@ fn test_append_message_level_fn() {
 				fields: [
 					Field{
 						key:   'level'
-						value: StringValue{MessageLevel.none.str()}
+						value: MessageLevel.none.str()
 					},
 				]
 				level:  .none
@@ -35,7 +35,7 @@ fn test_append_message_level_fn() {
 				fields: [
 					Field{
 						key:   'message_level'
-						value: StringValue{MessageLevel.error.str()}
+						value: MessageLevel.error.str()
 					},
 				]
 				level:  .error
