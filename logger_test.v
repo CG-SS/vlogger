@@ -1,6 +1,6 @@
 module vlogger
 
-import json
+import json2
 
 struct MemWriter {
 pub mut:
@@ -29,7 +29,7 @@ fn test_default_logger() {
 
 	assert mem_writer.buffer.len > 0
 
-	output := json.decode(TestDefaultLoggerOutput, mem_writer.buffer.bytestr()) or {
+	output := json2.decode[TestDefaultLoggerOutput](mem_writer.buffer.bytestr()) or {
 		assert false, 'json.decode failed: ${err}'
 		return
 	}

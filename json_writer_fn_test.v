@@ -1,7 +1,7 @@
 module vlogger
 
 import strings
-import json
+import json2
 
 struct LoggableStrut {
 	name string
@@ -115,7 +115,7 @@ fn test_write_json_message_fn_successful() {
 	writer_fn := write_json_message_fn(fn (_ IError) {}, mut sb)
 	writer_fn(test_fields)
 
-	output := json.decode(JsonWriteTestOutput, sb.str()) or {
+	output := json2.decode[JsonWriteTestOutput](sb.str()) or {
 		assert false, 'failed json decode: ${err}'
 		return
 	}

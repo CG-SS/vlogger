@@ -21,7 +21,8 @@ pub fn new(cfg LoggerCfg) DefaultLogger {
 
 	if timestamp_cfg.enabled {
 		if timestamp_cfg.format == .custom {
-			hook_fns_new << append_custom_timestamp_fn(timestamp_cfg.custom, timestamp_cfg.fieldname)
+			hook_fns_new << append_custom_timestamp_fn(timestamp_cfg.custom,
+				timestamp_cfg.fieldname)
 		} else {
 			hook_fns_new << append_timestamp_fn(timestamp_cfg.format, timestamp_cfg.fieldname)
 		}
