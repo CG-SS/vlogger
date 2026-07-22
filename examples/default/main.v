@@ -25,7 +25,19 @@ fn main() {
 	mut out := os.stdout()
 	defer { out.close() }
 
-	logger := vlogger.default(mut out)
+	// NOTE: `vlogger.default(mut out)` is the quickest way to get a logger, but it
+	// hardcodes the message level to `.info`, so any `trace()` and `debug()` calls
+	// are silently discarded by the level filter.
+	//
+	// To see them, build the logger with `new()` and lower the level explicitly.
+	// Levels are ordered: none < trace < debug < info < warn < error < fatal.
+	// Anything below the configured level is dropped.
+	logger := vlogger.new(vlogger.LoggerCfg{
+		write_fn: vlogger.write_json_message_fn(fn (_ IError) {}, mut out)
+		message:  vlogger.MessageCfg{
+			level: .trace // use `.debug` to keep trace filtered out
+		}
+	})
 	defer { logger.close() }
 
 	logger.trace().bool('hello', false).send()
@@ -37,6 +49,7 @@ fn main() {
 		name: 'John'
 		age:  19
 	}).send()
+
 	logger.info().array('nodes', [vlogger.StringValue{'hello'},
 		vlogger.StringValue{'there'}]).send()
 	logger.fatal().err('error', error('failure')).send()
